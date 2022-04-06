@@ -73,7 +73,6 @@ async def on_raw_reaction_add(payload):
 async def on_raw_reaction_remove(payload):
     guild = client.get_guild(payload.guild_id)
     member = get(guild.members, id=payload.user_id)
-    print(member)
     if payload.channel_id == int(os.environ['CHANNEL_ID']) and payload.message_id == int(os.environ['MESSAGE_ID']):
         if str(payload.emoji) == "🕹️":
             role = get(member.guild.roles, name='Rising Tide Tridents')
