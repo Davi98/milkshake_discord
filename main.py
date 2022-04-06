@@ -25,30 +25,32 @@ embed_post = discord.Embed(title='Qual a sua ligação com a Rising Tide?',
 
 @client.event
 async def on_ready():
-    channel = client.get_channel(int(os.environ.get('CHANNEL_ID')))
-    
-    message_1 = await channel.send(embed=embed_role)
-    await message_1.add_reaction('<:toplane:960929409781612596>')
-    await message_1.add_reaction('<:jungle:960927465247756328>')
-    await message_1.add_reaction('<:mid:960928365097943080>')
-    await message_1.add_reaction('<:adc:960928614797410364>')
-    await message_1.add_reaction('<:suporte:960929564496904193>')
-    
-    message_2 = await channel.send(embed=embed_elo)
-    await message_2.add_reaction('<:challenger:960933200841027614>')
-    await message_2.add_reaction('<:GM:960933117357588590>')
-    await message_2.add_reaction('<:mestre:960933348157587516>')
-    await message_2.add_reaction('<:diamante:960933117189841026>')
-    await message_2.add_reaction('<:platina:960933116820750356>')
-    await message_2.add_reaction('<:ouro:960933879978549288>')
-    await message_2.add_reaction('<:prata:960933347675217952>')
-    await message_2.add_reaction('<:bronze:960933348426010674>')
-    await message_2.add_reaction('<:ferro:960936086572531813>')
+    if (os.environ.get("FIRST_TIME")) == "True":
+        
+        channel = client.get_channel(int(os.environ.get('CHANNEL_ID')))
+        
+        message_1 = await channel.send(embed=embed_role)
+        await message_1.add_reaction('<:toplane:960929409781612596>')
+        await message_1.add_reaction('<:jungle:960927465247756328>')
+        await message_1.add_reaction('<:mid:960928365097943080>')
+        await message_1.add_reaction('<:adc:960928614797410364>')
+        await message_1.add_reaction('<:suporte:960929564496904193>')
+        
+        message_2 = await channel.send(embed=embed_elo)
+        await message_2.add_reaction('<:challenger:960933200841027614>')
+        await message_2.add_reaction('<:GM:960933117357588590>')
+        await message_2.add_reaction('<:mestre:960933348157587516>')
+        await message_2.add_reaction('<:diamante:960933117189841026>')
+        await message_2.add_reaction('<:platina:960933116820750356>')
+        await message_2.add_reaction('<:ouro:960933879978549288>')
+        await message_2.add_reaction('<:prata:960933347675217952>')
+        await message_2.add_reaction('<:bronze:960933348426010674>')
+        await message_2.add_reaction('<:ferro:960936086572531813>')
 
-    message_3 = await channel.send(embed=embed_post)
-    await message_3.add_reaction('🕹️')
-    await message_3.add_reaction('👓')
-    await message_3.add_reaction('💙')
+        message_3 = await channel.send(embed=embed_post)
+        await message_3.add_reaction('🕹️')
+        await message_3.add_reaction('👓')
+        await message_3.add_reaction('💙')
     
 @client.event
 async def on_reaction_add(reaction, user):
