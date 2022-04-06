@@ -1,15 +1,15 @@
 
-from cgi import test
 from dotenv import load_dotenv
 import os
-from discord.utils import get
 import discord
+from discord.utils import get
+from discord import Intents
 
 
 
 load_dotenv()
-
-client = discord.Client()
+intents = Intents.all()
+client = discord.Client(intents=intents)
 
 embed_role = discord.Embed(title='SELECIONE SUA ROLE',
                     description="Reaja de acordo com sua lane principal do League of Legends:\n\n<:toplane:960929409781612596> Top Lane \n\n <:jungle:960927465247756328> Jungle \n\n <:mid:960928365097943080>  Mid Lane\n\n <:adc:960928614797410364>  Adcarry\n\n <:suporte:960929564496904193> Suporte",
@@ -25,10 +25,8 @@ embed_post = discord.Embed(title='Qual a sua ligação com a Rising Tide?',
 
 @client.event
 async def on_ready():
-    if (os.environ.get("FIRST_TIME")) == "True":
-        
-        channel = client.get_channel(int(os.environ.get('CHANNEL_ID')))
-        
+    channel = client.get_channel(int(os.environ.get('CHANNEL_ID')))
+    if bool(os.environ.get("FIRST_TIME",False)):
         message_1 = await channel.send(embed=embed_role)
         await message_1.add_reaction('<:toplane:960929409781612596>')
         await message_1.add_reaction('<:jungle:960927465247756328>')
@@ -52,21 +50,46 @@ async def on_ready():
         await message_3.add_reaction('👓')
         await message_3.add_reaction('💙')
     
-@client.event
-async def on_reaction_add(reaction, user):
-    Channel = client.get_channel(int(os.environ.get('CHANNEL_ID')))
-    if reaction.message.channel.id != Channel.id:
-        return
-    if reaction.emoji == "🕹️":
-        Role = get(user.guild.roles, name="Rising Tide Tridents")
-        await user.add_roles(Role)
-    elif reaction.emoji == "👓":
-        Role = get(user.guild.roles, name="Staff")
-        await user.add_roles(Role)
-    elif reaction.emoji == "💙":
-        Role = get(user.guild.roles, name="Visitante")
-        await user.add_roles(Role)        
-        
-    
-client.run(os.environ.get('TOKEN',""))
 
+@client.event
+async def on_raw_reaction_add(payload):
+    guild = client.get_guild(payload.guild_id)
+    member = get(guild.members, id=payload.user_id)
+    if payload.channel_id == int(os.environ['CHANNEL_ID']) and payload.message_id == int(os.environ['MESSAGE_ID']):
+        if str(payload.emoji) == "🕹️":
+            role = get(member.guild.roles, name='Rising Tide Tridents')
+        elif str(payload.emoji) == "👓":
+            role = get(member.guild.roles, name='Staff')
+        elif str(payload.emoji) == "💙":
+            role = get(member.guild.roles, name='Visitante')
+        else:
+            role = get(guild.roles, name=payload.emoji)
+
+        if role is not None:
+            await payload.member.add_roles(role)
+            print(f"Assigned {member} to {role}.")
+
+@client.event
+async def on_raw_reaction_remove(payload):
+    guild = client.get_guild(payload.guild_id)
+    member = get(guild.members, id=payload.user_id)
+    print(member)
+    if payload.channel_id == int(os.environ['CHANNEL_ID']) and payload.message_id == int(os.environ['MESSAGE_ID']):
+        if str(payload.emoji) == "🕹️":
+            role = get(member.guild.roles, name='Rising Tide Tridents')
+        elif str(payload.emoji) == "👓":
+            role = get(member.guild.roles, name='Staff')
+        elif str(payload.emoji) == "💙":
+            role = get(guild.roles, name='Visitante')
+        else:
+            role = get(guild.roles, name=payload.emoji)
+
+        if role is not None:
+            await member.remove_roles(role)
+            print(f"Removed {role} from {member}.")
+
+
+print("Server Running.")
+
+
+client.run(os.environ.get("TOKEN"))
